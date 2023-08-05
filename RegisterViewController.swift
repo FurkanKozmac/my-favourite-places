@@ -149,57 +149,67 @@ class RegisterViewController: UIViewController {
         setupUI()
     }
     
-    @objc func registerButtonTapped() {
-        
+    private func activateIndicator() {
         activityIndicator.startAnimating()
         self.registerButton.setTitle("", for: .normal)
         registerButton.isUserInteractionEnabled = false
+    }
+    
+    private func deactivateIndicator() {
+        self.activityIndicator.stopAnimating()
+        self.registerButton.setTitle("Register", for: .normal)
+        self.registerButton.isUserInteractionEnabled = true
+    }
+    
+    private func generateAlert(message: String) {
+        
+        let alert = UIAlertController(title: "Warning", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .default, handler: nil))
+        self.present(alert, animated: true)
+        
+    }
+    
+    private func generateUser() {
+        
+        self.db.collection("userInfo").addDocument(data: [
+            "firstName" : "\(self.firstNameTextField.text!)",
+            "lastName" : self.lastNameTextField.text!,
+            "email" : self.mailTextField.text!,
+            "password" : self.passwordTextField.text!,
+            "userName" : "\(self.firstNameTextField.text!) \(self.lastNameTextField.text!)"
+        ])
+    }
+    
+    @objc func registerButtonTapped() {
+        
+        activateIndicator()
         
         guard let email = mailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty,
               let name = firstNameTextField.text, !name.isEmpty,
               let lastName = lastNameTextField.text, !lastName.isEmpty
         else {
-            let alert = UIAlertController(title: "Warning", message: "Please enter all informations.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true)
-            self.activityIndicator.stopAnimating()
-            self.registerButton.setTitle("Register", for: .normal)
-            self.registerButton.isUserInteractionEnabled = true
+            generateAlert(message: "Please enter all informations.")
+            deactivateIndicator()
             return
         }
         
         if isValidEmail(email) {
             Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                 if let error = error {
-                    let alert = UIAlertController(title: "Error", message: "An error occurred: \(error.localizedDescription)", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    self.present(alert, animated: true)
-                    self.activityIndicator.stopAnimating()
-                    self.registerButton.setTitle("Register", for: .normal)
-                    self.registerButton.isUserInteractionEnabled = true                } else {
-                        self.db.collection("userInfo").addDocument(data: [
-                            "firstName" : "\(self.firstNameTextField.text!)",
-                            "lastName" : self.lastNameTextField.text!,
-                            "email" : self.mailTextField.text!,
-                            "password" : self.passwordTextField.text!,
-                            "userName" : "\(self.firstNameTextField.text!) \(self.lastNameTextField.text!)"
-                        ])
-                        self.activityIndicator.stopAnimating()
-                        self.registerButton.setTitle("Register", for: .normal)
-                        self.registerButton.isUserInteractionEnabled = true
-                        self.navigationController?.popViewController(animated: true)
-                    }
+                    self.generateAlert(message: "An error occurred: \(error.localizedDescription)")
+                    self.deactivateIndicator()
+                } else {
+                    self.generateUser()
+                    self.deactivateIndicator()
+                    self.navigationController?.popViewController(animated: true)
+                }
             }
-
+            
         } else {
             
-            let alert = UIAlertController(title: "Warning", message: "Invalid email format. Please enter a valid email address.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true)
-            self.activityIndicator.stopAnimating()
-            self.registerButton.setTitle("Register", for: .normal)
-            self.registerButton.isUserInteractionEnabled = true
+            self.generateAlert(message: "Invalid email format. Please enter a valid email address.")
+            self.deactivateIndicator()
         }
     }
     

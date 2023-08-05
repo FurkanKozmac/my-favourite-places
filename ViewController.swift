@@ -10,11 +10,11 @@ import FirebaseAuth
 
 class ViewController: UIViewController {
     
-    let mailTextField = UITextField()
-    let passwordTextField = UITextField()
-    let loginButton = UIButton(type: .system)
-    let registerButton = UIButton(type: .system)
-    let activityIndicator = UIActivityIndicatorView(style: .medium)
+    private let mailTextField = UITextField()
+    private let passwordTextField = UITextField()
+    private let loginButton = UIButton(type: .system)
+    private let registerButton = UIButton(type: .system)
+    private let activityIndicator = UIActivityIndicatorView(style: .medium)
     
     // MARK: Initializing Views
     
@@ -137,20 +137,20 @@ class ViewController: UIViewController {
         setupUI()
     }
     
-    func getAlert(message: String) {
+    private func getAlert(message: String) {
         let alert = UIAlertController(title: "Warning", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Ok", style: .default))
         self.present(alert, animated: true)
         
     }
     
-    func deactivateIndicator() {
+    private func deactivateIndicator() {
         self.activityIndicator.stopAnimating()
         self.loginButton.setTitle("Login", for: .normal)
         self.loginButton.isUserInteractionEnabled = true
     }
     
-    func activateIndicator() {
+    private func activateIndicator() {
         self.activityIndicator.startAnimating()
         self.loginButton.setTitle("", for: .normal)
         self.loginButton.isUserInteractionEnabled = false
@@ -177,7 +177,6 @@ class ViewController: UIViewController {
                 return
             }
             
-            // Login successful, navigate to MapViewController
             strongSelf.navigationController?.setViewControllers([MapViewController()], animated: true)
             self?.deactivateIndicator()
         }
