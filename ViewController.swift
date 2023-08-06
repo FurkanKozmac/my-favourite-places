@@ -177,7 +177,7 @@ class ViewController: UIViewController {
                 return
             }
             
-            strongSelf.navigationController?.setViewControllers([MapViewController()], animated: true)
+            strongSelf.navigationController?.setViewControllers([TabViewController()], animated: true)
             self?.deactivateIndicator()
         }
         

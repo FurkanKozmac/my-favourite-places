@@ -9,12 +9,14 @@ import UIKit
 import MapKit
 import CoreLocation
 import FirebaseFirestore
+import FirebaseAuth
 
 class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
     
     private let mapView = MKMapView()
     private let locationManager = CLLocationManager()
     private let db = Firestore.firestore()
+    private let user = Auth.auth().currentUser
     
     // MARK: Setting up UI
     
@@ -22,8 +24,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         mapView.showsUserLocation = true
         mapView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mapView)
-        
-        
+
         // MARK: Constraints
         
         NSLayoutConstraint.activate([
@@ -31,17 +32,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             mapView.rightAnchor.constraint(equalTo: view.rightAnchor),
             mapView.topAnchor.constraint(equalTo: view.topAnchor),
             mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
-        
+            
         ])
         
     }
     
     // MARK: Functions
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGray6
         mapView.delegate = self
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -63,8 +62,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             
             let annotation = MKPointAnnotation()
             annotation.coordinate = touchedCoordinates
-            annotation.title = "Memory"
-            annotation.subtitle = "I kissed you here."
+            annotation.title = "Title"
+            annotation.subtitle = "Subtitle"
             self.mapView.addAnnotation(annotation)
         }
         
@@ -76,6 +75,5 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         let region = MKCoordinateRegion(center: location, span: span)
         mapView.setRegion(region, animated: true)
     }
-
-
+    
 }

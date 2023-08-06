@@ -12,14 +12,15 @@ import FirebaseFirestore
 class RegisterViewController: UIViewController {
     
     let titleLabel = UILabel()
-    let firstNameTextField = UITextField()
-    let lastNameTextField = UITextField()
-    let mailTextField = UITextField()
-    let passwordTextField = UITextField()
-    let activityIndicator = UIActivityIndicatorView(style: .medium)
-    let registerButton = UIButton(type: .system)
+    private let firstNameTextField = UITextField()
+    private let lastNameTextField = UITextField()
+    private let mailTextField = UITextField()
+    private let passwordTextField = UITextField()
+    private let activityIndicator = UIActivityIndicatorView(style: .medium)
+    private let registerButton = UIButton(type: .system)
     
-    let db = Firestore.firestore()
+    private let db = Firestore.firestore()
+    private let auth = Auth.auth()
     
     // MARK: Setting up UI
     
@@ -176,8 +177,10 @@ class RegisterViewController: UIViewController {
             "lastName" : self.lastNameTextField.text!,
             "email" : self.mailTextField.text!,
             "password" : self.passwordTextField.text!,
-            "userName" : "\(self.firstNameTextField.text!) \(self.lastNameTextField.text!)"
+            "userName" : "\(self.firstNameTextField.text!) \(self.lastNameTextField.text!)",
+            "userID" : "\(auth.currentUser!.uid)"
         ])
+        
     }
     
     @objc func registerButtonTapped() {
