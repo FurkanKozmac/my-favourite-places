@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class TabViewController: UITabBarController {
 
@@ -14,6 +15,7 @@ class TabViewController: UITabBarController {
         setupTabs()
         tabBar.tintColor = .systemOrange
         tabBar.unselectedItemTintColor = .black
+        
         // Do any additional setup after loading the view.
     }
     
