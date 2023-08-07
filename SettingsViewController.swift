@@ -87,15 +87,19 @@ class SettingsViewController: UIViewController {
     @objc private func didTapLogoutButton() {
         do {
             try Auth.auth().signOut()
-            if Auth.auth().currentUser == nil {
-                
+            
+            // Çıkış işlemi başarılı, kullanıcıyı giriş ekranına yönlendirir.
+            if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let window = scene.windows.first {
+                let loginViewController = ViewController()
+                window.rootViewController = loginViewController
+            }            } catch {
+                print("Çıkış işlemi başarısız: \(error.localizedDescription)")
+                // Çıkış işlemi başarısız olursa kullanıcıyı giriş ekranında bırakabilir veya uygun şekilde yönlendirebilirsiniz.
             }
-        } catch let signOutError as NSError {
-            print("Error signing out: %@", signOutError)
-        }
     }
     
-
-
+    
+    
     
 }

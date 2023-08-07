@@ -9,7 +9,7 @@ import UIKit
 import FirebaseAuth
 
 class TabViewController: UITabBarController {
-
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()
@@ -34,5 +34,5 @@ class TabViewController: UITabBarController {
         nav.tabBarItem.image = image
         return nav
     }
-
+    
 }
