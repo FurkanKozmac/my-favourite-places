@@ -148,6 +148,8 @@ class ViewController: UIViewController {
         self.activityIndicator.stopAnimating()
         self.loginButton.setTitle("Login", for: .normal)
         self.loginButton.isUserInteractionEnabled = true
+        self.mailTextField.text = ""
+        self.passwordTextField.text = ""
     }
     
     private func activateIndicator() {
@@ -172,17 +174,18 @@ class ViewController: UIViewController {
             guard let strongSelf = self else { return }
             
             if error != nil {
-                self?.getAlert(message: "Invalid email or password. Please try again.")
-                self?.deactivateIndicator()
+                strongSelf.getAlert(message: "Invalid email or password. Please try again.")
+                strongSelf.deactivateIndicator()
                 return
             }
-            
-            strongSelf.navigationController?.setViewControllers([TabViewController()], animated: true)
-            self?.deactivateIndicator()
+            let vc = TabViewController()
+            let nav = UINavigationController(rootViewController: vc)
+            nav.modalPresentationStyle = .fullScreen
+            strongSelf.present(nav, animated: true)
+            strongSelf.deactivateIndicator()
         }
         
     }
-    
     
     @objc func didTapRegisterButton() {
         let vc = RegisterViewController()

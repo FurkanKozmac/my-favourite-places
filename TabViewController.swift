@@ -9,13 +9,14 @@ import UIKit
 import FirebaseAuth
 
 class TabViewController: UITabBarController {
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTabs()
         tabBar.tintColor = .systemOrange
         tabBar.unselectedItemTintColor = .black
-        
+        self.navigationItem.backBarButtonItem?.isEnabled = false
+        self.navigationItem.backBarButtonItem?.isHidden = true
         // Do any additional setup after loading the view.
     }
     
@@ -23,10 +24,10 @@ class TabViewController: UITabBarController {
         let map = self.createNav(with: "Map", image: UIImage(systemName: "map.fill"), vc: MapViewController())
         let favourites = self.createNav(with: "Favourites", image: UIImage(systemName: "heart.fill"), vc: FavouritesViewController())
         let settings = self.createNav(with: "Settings", image: UIImage(systemName: "gearshape.fill"), vc: SettingsViewController())
-        
         self.setViewControllers([map, favourites, settings], animated: true)
         
     }
+    
     
     private func createNav(with title: String, image: UIImage?, vc: UIViewController) -> UINavigationController {
         let nav = UINavigationController(rootViewController: vc)

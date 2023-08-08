@@ -198,19 +198,18 @@ class RegisterViewController: UIViewController {
         }
         
         if isValidEmail(email) {
-            Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+            Auth.auth().createUser(withEmail: email, password: password) { [weak self] authResult, error in
+                guard let strongSelf = self else { return }
                 if let error = error {
-                    self.generateAlert(message: "An error occurred: \(error.localizedDescription)")
-                    self.deactivateIndicator()
+                    strongSelf.generateAlert(message: "An error occurred: \(error.localizedDescription)")
+                    strongSelf.deactivateIndicator()
                 } else {
-                    self.generateUser()
-                    self.deactivateIndicator()
-                    self.navigationController?.popViewController(animated: true)
+                    strongSelf.generateUser()
+                    strongSelf.deactivateIndicator()
+                    strongSelf.navigationController?.popViewController(animated: true)
                 }
             }
-            
         } else {
-            
             self.generateAlert(message: "Invalid email format. Please enter a valid email address.")
             self.deactivateIndicator()
         }
