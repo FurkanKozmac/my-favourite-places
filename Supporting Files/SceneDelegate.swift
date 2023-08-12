@@ -22,6 +22,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         window?.makeKeyAndVisible()
+     //   window?.rootViewController = UINavigationController(rootViewController: FavouritesViewController())
+
         
         let currentUser = Auth.auth().currentUser
         

@@ -15,8 +15,7 @@ class TabViewController: UITabBarController {
         setupTabs()
         tabBar.tintColor = .systemOrange
         tabBar.unselectedItemTintColor = .black
-        self.navigationItem.backBarButtonItem?.isEnabled = false
-        self.navigationItem.backBarButtonItem?.isHidden = true
+        navigationController?.navigationBar.isHidden = true
         // Do any additional setup after loading the view.
     }
     
