@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     
     // MARK: Initializing Views
     
-    func setupUI() {
+    private func setupUI() {
         
         let headerView = UIView()
         headerView.backgroundColor = .systemOrange

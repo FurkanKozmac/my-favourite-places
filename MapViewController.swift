@@ -24,7 +24,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         mapView.showsUserLocation = true
         mapView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(mapView)
-
+        
         // MARK: Constraints
         
         NSLayoutConstraint.activate([
@@ -53,7 +53,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         mapView.addGestureRecognizer(gestureRecognizer)
     }
     
-  
+    
     @objc func chooseLocation(gestureRecognizer: UILongPressGestureRecognizer) {
         
         if gestureRecognizer.state == .began {
@@ -66,11 +66,16 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             annotation.title = "Title"
             annotation.subtitle = "Subtitle"
             self.mapView.addAnnotation(annotation)
+            
+            let vc = CommentViewController()
+            vc.modalPresentationStyle = .overCurrentContext
+            self.present(vc, animated: true)
+            
         }
         
     }
     
-
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         let location = CLLocationCoordinate2D(latitude: locations[0].coordinate.latitude, longitude: locations[0].coordinate.longitude)
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)

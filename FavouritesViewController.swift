@@ -11,7 +11,7 @@ class FavouritesViewController: UIViewController {
     
     let tableView = UITableView()
     
-        // MARK: Configure UI
+    // MARK: Configure UI
     
     private func setupUI() {
         
@@ -26,7 +26,6 @@ class FavouritesViewController: UIViewController {
         let favouritesLabel = UILabel()
         favouritesLabel.textColor = .darkGray
         favouritesLabel.text = "Favourites"
-        favouritesLabel.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         favouritesLabel.font = UIFont.systemFont(ofSize: 32, weight: .bold)
         favouritesLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(favouritesLabel)
@@ -42,10 +41,10 @@ class FavouritesViewController: UIViewController {
         ])
         
     }
-
     
-        // MARK: Functions
-
+    
+    // MARK: Functions
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
@@ -58,10 +57,10 @@ class FavouritesViewController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
-            super.viewDidLayoutSubviews()
-            
-            tableView.frame.size.height = tableView.contentSize.height
-        }
+        super.viewDidLayoutSubviews()
+        
+        tableView.frame.size.height = tableView.contentSize.height
+    }
     
 }
 
