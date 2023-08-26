@@ -22,11 +22,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
         window?.makeKeyAndVisible()
-        window?.rootViewController = UINavigationController(rootViewController: MapViewController())
+     //   window?.rootViewController = UINavigationController(rootViewController: ViewController())
         
         
         
-     /*
+     
         let currentUser = Auth.auth().currentUser
         
         if currentUser != nil {
@@ -35,7 +35,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window?.rootViewController = UINavigationController(rootViewController: ViewController())
         }
         
-        */
+        
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

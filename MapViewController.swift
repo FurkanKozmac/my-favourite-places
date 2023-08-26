@@ -17,6 +17,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private let locationManager = CLLocationManager()
     private let db = Firestore.firestore()
     private let user = Auth.auth().currentUser
+    private var annotation = MKPointAnnotation()
     
     // MARK: Setting up UI
     
@@ -46,11 +47,15 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
+        
         setupUI()
         
         let gestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(chooseLocation(gestureRecognizer:)))
         gestureRecognizer.minimumPressDuration = 2
         mapView.addGestureRecognizer(gestureRecognizer)
+        
+        
+        fetchFirestoreLocationData()
     }
     
     
@@ -61,19 +66,55 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             let touchedPoint = gestureRecognizer.location(in: self.mapView)
             let touchedCoordinates = self.mapView.convert(touchedPoint, toCoordinateFrom: self.mapView)
             
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = touchedCoordinates
-            annotation.title = "Title"
-            annotation.subtitle = "Subtitle"
-            self.mapView.addAnnotation(annotation)
+            let newAnnotation = MKPointAnnotation() // Create a new annotation
+            newAnnotation.coordinate = touchedCoordinates
+            newAnnotation.title = "Set place"
+            self.mapView.addAnnotation(newAnnotation) // Add the new annotation to the map
             
             let vc = CommentViewController()
+            vc.selectedCoordinates = touchedCoordinates
             vc.modalPresentationStyle = .overCurrentContext
             self.present(vc, animated: true)
-            
         }
-        
     }
+
+    
+    func fetchFirestoreLocationData() {
+        let ref = db.collection("savedPlaces")
+        
+        ref.getDocuments { [weak self] snapshot, error in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print(error)
+                return
+            }
+            
+            guard let documents = snapshot?.documents else {
+                print("no document.")
+                return
+            }
+            
+            DispatchQueue.main.async {
+                for document in documents {
+                    if let latitudeStr = document.data()["latitude"] as? String,
+                       let longitudeStr = document.data()["longitude"] as? String,
+                       let latitude = Double(latitudeStr),
+                       let longitude = Double(longitudeStr) {
+                        
+                        
+                        self.annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                        self.annotation.title = document.data()["title"] as? String
+                        self.annotation.subtitle = document.data()["comment"] as? String
+                        
+                        self.mapView.addAnnotation(self.annotation)
+                    }
+                }
+            }
+        }
+    }
+
+    
     
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

@@ -7,8 +7,13 @@
 
 import UIKit
 import FirebaseAuth
+import FirebaseFirestore
 
 class SettingsViewController: UIViewController {
+    
+    let db = Firestore.firestore()
+    let currentUser = Auth.auth().currentUser
+    var data: [String: Any] = [:]
     
     private let logoutButton = UIButton(type: .system)
     private let userNameLabel = UILabel()
@@ -33,13 +38,13 @@ class SettingsViewController: UIViewController {
         view.addSubview(settingsLabel)
         
         userNameLabel.textColor = .darkGray
-        userNameLabel.text = "Furkan Kozmaç"
+        userNameLabel.text = "Loading..."
         userNameLabel.font = UIFont.systemFont(ofSize: 24, weight: .semibold)
         userNameLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(userNameLabel)
         
         emailLabel.textColor = .darkGray
-        emailLabel.text = "deneme@swift.io"
+        emailLabel.text = "Loading..."
         emailLabel.font = UIFont.systemFont(ofSize: 18, weight: .regular)
         emailLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(emailLabel)
@@ -82,9 +87,35 @@ class SettingsViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemGray6
         setupUI()
+        getUserData()
+    }
+    
+    private func getUserData() {
+        
+        db.collection("userInfo").whereField("userID", isEqualTo: currentUser!.uid)
+            .getDocuments() { (querySnapshot, err) in
+                
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                } else {
+                    for document in querySnapshot!.documents {
+                        print("\(document.documentID) => \(document.data())")
+                        self.data = document.data()
+                        
+                        if let userName = self.data["userName"] as? String {
+                            self.userNameLabel.text = userName
+                        }
+                        
+                        if let email = self.data["email"] as? String {
+                            self.emailLabel.text = email
+                        }
+                    }
+                }
+            }
     }
     
     @objc private func didTapLogoutButton() {
+        
         do {
             try Auth.auth().signOut()
             
@@ -95,6 +126,7 @@ class SettingsViewController: UIViewController {
                     nav.modalPresentationStyle = .fullScreen
                     self.present(nav, animated: true)
                 })
+                
             } else {
                 
                 let vc = ViewController()
@@ -102,6 +134,7 @@ class SettingsViewController: UIViewController {
                 nav.modalPresentationStyle = .fullScreen
                 self.present(nav, animated: true)
             }
+            
         } catch {
             print("Çıkış işlemi başarısız: \(error.localizedDescription)")
         }

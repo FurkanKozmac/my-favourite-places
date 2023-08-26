@@ -16,8 +16,9 @@ class TabViewController: UITabBarController {
         tabBar.tintColor = .systemOrange
         tabBar.unselectedItemTintColor = .black
         navigationController?.navigationBar.isHidden = true
-        // Do any additional setup after loading the view.
     }
+    
+    
     
     private func setupTabs() {
         let map = self.createNav(with: "Map", image: UIImage(systemName: "map.fill"), vc: MapViewController())

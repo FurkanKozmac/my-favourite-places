@@ -6,14 +6,24 @@
 //
 
 import UIKit
+import CoreLocation
+import FirebaseAuth
+import FirebaseFirestore
 
 class CommentViewController: UIViewController {
     
     var titleTextField = UITextField()
     var commentTextField = UITextField()
+    var mapViewController: MapViewController?
     private let saveLocationButton = UIButton(type: .system)
     private let cancelButton = UIButton(type: .close)
     private let activityIndicator = UIActivityIndicatorView(style: .medium)
+    
+    let currentUser = Auth.auth().currentUser
+    let db = Firestore.firestore()
+    
+    
+    var selectedCoordinates: CLLocationCoordinate2D?
     
     private func setupUI() {
         
@@ -77,12 +87,11 @@ class CommentViewController: UIViewController {
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         saveLocationButton.addSubview(activityIndicator)
         
-        
         NSLayoutConstraint.activate([
             
             containerView.widthAnchor.constraint(equalToConstant: view.frame.width),
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            containerView.heightAnchor.constraint(equalToConstant: 300),
+            containerView.heightAnchor.constraint(equalToConstant: 330),
             containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             addLocationLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant:20),
@@ -111,10 +120,18 @@ class CommentViewController: UIViewController {
             activityIndicator.centerXAnchor.constraint(equalTo: saveLocationButton.centerXAnchor),
             activityIndicator.centerYAnchor.constraint(equalTo: saveLocationButton.centerYAnchor)
             
-            
-            
         ])
         
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupUI()
+        // Do any additional setup after loading the view.
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        self.dismiss(animated: true)
     }
     
     @objc func closeButtonTapped() {
@@ -139,23 +156,38 @@ class CommentViewController: UIViewController {
         let alert = UIAlertController(title: "Warning", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Ok", style: .default))
         self.present(alert, animated: true)
-        
     }
     
     private func handleSavingLocationToFirestore() {
         
-    }
-    
-    @objc func saveLocationButtonTapped() {
+        self.activateIndicator()
+        
+        if let coordinates = selectedCoordinates {
+            
+            if titleTextField.text != "" && commentTextField.text != "" {
+                
+                self.db.collection("savedPlaces").addDocument(data: [
+                    "latitude" : "\(coordinates.latitude)",
+                    "longitude" : "\(coordinates.longitude)",
+                    "title" : "\(String(describing: self.titleTextField.text!))",
+                    "comment" : "\(String(describing: self.commentTextField.text!))",
+                    "userID" : "\(String(describing: self.currentUser!.uid))"
+                ])
+                
+            } else {
+                self.getAlert(message: "Title cannot be empty.")
+            }
+            
+            
+        }
+        
         
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        // Do any additional setup after loading the view.
+    @objc func saveLocationButtonTapped() {
+        handleSavingLocationToFirestore()
+        deactivateIndicator()
+        self.dismiss(animated: true)
     }
-    
-    
     
 }
