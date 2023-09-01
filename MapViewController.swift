@@ -17,8 +17,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     private let locationManager = CLLocationManager()
     private let db = Firestore.firestore()
     private let user = Auth.auth().currentUser
-    private var annotation = MKPointAnnotation()
-    
+    private var mapAnnotations: [MKAnnotation] = []
+        
     // MARK: Setting up UI
     
     private func setupUI() {
@@ -42,6 +42,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         mapView.delegate = self
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
@@ -54,8 +55,7 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         gestureRecognizer.minimumPressDuration = 2
         mapView.addGestureRecognizer(gestureRecognizer)
         
-        
-        fetchFirestoreLocationData()
+        fetchFirestoreLocationData()        
     }
     
     
@@ -66,23 +66,18 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
             let touchedPoint = gestureRecognizer.location(in: self.mapView)
             let touchedCoordinates = self.mapView.convert(touchedPoint, toCoordinateFrom: self.mapView)
             
-            let newAnnotation = MKPointAnnotation() // Create a new annotation
-            newAnnotation.coordinate = touchedCoordinates
-            newAnnotation.title = "Set place"
-            self.mapView.addAnnotation(newAnnotation) // Add the new annotation to the map
-            
             let vc = CommentViewController()
             vc.selectedCoordinates = touchedCoordinates
             vc.modalPresentationStyle = .overCurrentContext
             self.present(vc, animated: true)
         }
     }
-
     
     func fetchFirestoreLocationData() {
-        let ref = db.collection("savedPlaces")
         
-        ref.getDocuments { [weak self] snapshot, error in
+        let ref = db.collection("savedPlaces").whereField("userID", isEqualTo: user!.uid)
+        
+        ref.addSnapshotListener { [weak self] snapshot, error in
             guard let self = self else { return }
             
             if let error = error {
@@ -95,26 +90,23 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                 return
             }
             
-            DispatchQueue.main.async {
-                for document in documents {
-                    if let latitudeStr = document.data()["latitude"] as? String,
-                       let longitudeStr = document.data()["longitude"] as? String,
-                       let latitude = Double(latitudeStr),
-                       let longitude = Double(longitudeStr) {
-                        
-                        
-                        self.annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-                        self.annotation.title = document.data()["title"] as? String
-                        self.annotation.subtitle = document.data()["comment"] as? String
-                        
-                        self.mapView.addAnnotation(self.annotation)
-                    }
+            for document in documents {
+                if let latitudeStr = document.get("latitude") as? String,
+                   let longitudeStr = document.get("longitude") as? String,
+                   let latitude = Double(latitudeStr),
+                   let longitude = Double(longitudeStr) {
+                    
+                    let annotation = MKPointAnnotation()
+                    annotation.coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+                    annotation.title = document.get("title") as? String
+                    annotation.subtitle = document.get("comment") as? String
+                    
+                    self.mapAnnotations.append(annotation)
                 }
             }
+            self.mapView.addAnnotations(self.mapAnnotations)
         }
     }
-
-    
     
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
