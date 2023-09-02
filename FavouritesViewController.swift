@@ -62,7 +62,7 @@ class FavouritesViewController: UIViewController {
         setupUI()
         fetchPlacesFromFirestore()
     }
-        
+    
     private func fetchPlacesFromFirestore() {
         
         let ref = db.collection("savedPlaces").whereField("userID", isEqualTo: user!.uid)
@@ -99,6 +99,31 @@ class FavouritesViewController: UIViewController {
         
     }
     
+    func deletePlace(at indexPath: IndexPath) {
+        let titleToDelete = self.titleArray[indexPath.row]
+        
+        let ref = db.collection("savedPlaces").whereField("userID", isEqualTo: user!.uid).whereField("title", isEqualTo: titleToDelete)
+        
+        ref.getDocuments { [weak self] (querySnapshot, error) in
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("Error deleting document: \(error.localizedDescription)")
+            } else {
+                for document in querySnapshot!.documents {
+                    document.reference.delete()
+                    print("Document successfully deleted from Firestore")
+                }
+                
+                self.titleArray.remove(at: indexPath.row)
+                self.latitudeArray.remove(at: indexPath.row)
+                self.longitudeArray.remove(at: indexPath.row)
+                self.tableView.deleteRows(at: [indexPath], with: .fade)
+            }
+        }
+    }
+    
+    
     
 }
 
@@ -120,6 +145,18 @@ extension FavouritesViewController: UITableViewDelegate, UITableViewDataSource {
         
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completionHandler) in
+            self.deletePlace(at: indexPath)
+            completionHandler(true)
+        }
+        
+        deleteAction.image = UIImage(systemName: "trash")
+        
+        return UISwipeActionsConfiguration(actions: [deleteAction])
+    }
+    
     
 }
 

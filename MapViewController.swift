@@ -55,9 +55,8 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
         gestureRecognizer.minimumPressDuration = 2
         mapView.addGestureRecognizer(gestureRecognizer)
         
-        fetchFirestoreLocationData()        
+        fetchFirestoreLocationData()
     }
-    
     
     @objc func chooseLocation(gestureRecognizer: UILongPressGestureRecognizer) {
         
@@ -89,6 +88,9 @@ class MapViewController: UIViewController, MKMapViewDelegate, CLLocationManagerD
                 print("no document.")
                 return
             }
+            
+            self.mapView.removeAnnotations(self.mapView.annotations)
+            self.mapAnnotations.removeAll()
             
             for document in documents {
                 if let latitudeStr = document.get("latitude") as? String,
